@@ -13,6 +13,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 import difflib
+import random
 
 nest_asyncio.apply()
 
@@ -423,8 +424,19 @@ async def comment_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pulse = context.user_data['pulse']
     comment = update.message.text
     add_entry_to_db(user_id, bp, pulse, comment)
-    await update.message.reply_text(f"✅ Entry saved:\nBP: {bp} | Pulse: {pulse}\nNote: {comment}", reply_markup=MAIN_MENU)
+    
+    # Random donation message (10% chance)
+    donation_text = ""
+    if random.random() < 0.1:  # 10% probability
+        donation_text = "\n\n💝 Love this bot? Support it: https://saymealien.space/donation.html\n" \
+                       "Creator: @saymealien"
+    
+    await update.message.reply_text(
+        f"✅ Entry saved:\nBP: {bp} | Pulse: {pulse}\nNote: {comment}{donation_text}",
+        reply_markup=MAIN_MENU
+    )
     return ConversationHandler.END
+
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("❌ Action cancelled.", reply_markup=MAIN_MENU)
@@ -641,7 +653,7 @@ async def main_menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 if __name__ == "__main__":
     init_db()
     # REPLACE THIS WITH YOUR ACTUAL BOT TOKEN FROM BOTFATHER
-    TOKEN = "myau"  # Replace with your actual token
+    TOKEN = "MYAU"  # Replace with your actual token
     app = Application.builder().token(TOKEN).build()
 
     # /add conversation
